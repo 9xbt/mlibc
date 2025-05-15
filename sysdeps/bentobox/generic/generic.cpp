@@ -4,6 +4,7 @@
 
 #include <abi-bits/seek-whence.h>
 #include <abi-bits/vm-flags.h>
+#include <abi-bits/termios.h>
 #include <bits/off_t.h>
 #include <bits/ssize_t.h>
 #include <abi-bits/stat.h>
@@ -11,6 +12,7 @@
 #include "syscall.h"
 #include <string.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
@@ -26,6 +28,8 @@ static inline int sc_error(long ret) {
 }
 
 namespace [[gnu::visibility("hidden")]] mlibc {
+
+    /* Fuck github desktop man */
 
     [[noreturn]] void sys_exit(int status) {
         __syscall1(60 /* exit() */, status);
@@ -83,6 +87,10 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     }
     
     int sys_read(int fd, void *buf, size_t count, ssize_t *bytes_read) {
+        if (fd == 0) {
+            fflush(stdout);    
+        }
+
         auto ret = __syscall3(0 /* read */, fd, (size_t)buf, count);
         if (int e = sc_error(ret); e)
             return e;
@@ -156,6 +164,21 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     
     int sys_anon_free(void *pointer, size_t size) {
         return sys_vm_unmap(pointer, size);
+    }
+
+    int sys_isatty(int fd) {
+        struct termios t;
+        auto ret = __syscall3(16 /* ioctl */, fd, 0x5401 /* TCGETS */, (long)&t);
+        if (sc_error(ret) == ENOTTY)
+            return ENOTTY;
+        else if (sc_error(ret))
+            return sc_error(ret);
+        return 0;
+    }
+
+    int sys_ioctl(int fd, unsigned long request, void *arg) {
+        auto ret = __syscall3(16 /* ioctl */, fd, request, (long)arg);
+        return sc_error(ret);
     }
 
 } //namespace mlibc

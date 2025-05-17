@@ -5,3 +5,4 @@
 .vscode
 compile_commands.json
 /linux-headers
+.cache/

@@ -1,6 +1,5 @@
 #include <stddef.h>
 #include <errno.h>
-#include <limits.h>
 
 #include <abi-bits/seek-whence.h>
 #include <abi-bits/vm-flags.h>
@@ -9,9 +8,9 @@
 #include <bits/ssize_t.h>
 #include <abi-bits/stat.h>
 #include <mlibc/fsfd_target.hpp>
+#include <abi-bits/signal.h>
 #include "syscall.h"
 #include <string.h>
-#include <stdint.h>
 #include <stdio.h>
 
 #pragma GCC diagnostic push
@@ -41,6 +40,7 @@ namespace [[gnu::visibility("hidden")]] mlibc {
         size_t len = strlen(message);
         if (len > 0)
             __syscall3(1 /* write() */, 2 /* stderr */, (long)message, len);
+        __syscall3(1 /* write() */, 2 /* stderr */, (long)"\n", 1);
     }
     
     [[noreturn]] void sys_libc_panic() {
@@ -192,9 +192,17 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     }
 
     int sys_execve(const char *path, char *const argv[], char *const envp[]) {
-        auto ret = __syscall3(59 /* execve */, (long)path, (long)argv, (long)envp);
+        auto ret = __syscall3(59 /* sys_execve */, (long)path, (long)argv, (long)envp);
         if (int e = sc_error(ret); e)
             return e;
+        return 0;
+    }
+
+    int sys_fork(pid_t *child) {
+        auto ret = __syscall2(56 /* sys_clone */, SIGCHLD, 0);
+        if (int e = sc_error(ret); e)
+            return e;
+        *child = (pid_t)ret;
         return 0;
     }
 

@@ -180,6 +180,23 @@ namespace [[gnu::visibility("hidden")]] mlibc {
         auto ret = __syscall3(16 /* ioctl */, fd, request, (long)arg);
         return sc_error(ret);
     }
+    
+    int sys_clock_get(int clock, time_t *secs, long *nanos) {
+        struct timespec tp = {};
+        auto ret = __syscall2(228 /* sys_clock_gettime */, clock, (long)&tp);
+        if (int e = sc_error(ret); e)
+            return e;
+        *secs = tp.tv_sec;
+        *nanos = tp.tv_nsec;
+        return 0;
+    }
+
+    int sys_execve(const char *path, char *const argv[], char *const envp[]) {
+        auto ret = __syscall3(59 /* execve */, (long)path, (long)argv, (long)envp);
+        if (int e = sc_error(ret); e)
+            return e;
+        return 0;
+    }
 
 } //namespace mlibc
 

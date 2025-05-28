@@ -88,7 +88,7 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     
     int sys_read(int fd, void *buf, size_t count, ssize_t *bytes_read) {
         if (fd == 0) {
-            fflush(stdout);    
+            fflush(stdout);
         }
 
         auto ret = __syscall3(0 /* read */, fd, (size_t)buf, count);
@@ -199,6 +199,7 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     }
 
     int sys_fork(pid_t *child) {
+        fflush(stdout);
         auto ret = __syscall2(56 /* sys_clone */, SIGCHLD, 0);
         if (int e = sc_error(ret); e)
             return e;

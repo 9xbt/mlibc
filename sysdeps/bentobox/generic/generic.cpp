@@ -207,6 +207,13 @@ namespace [[gnu::visibility("hidden")]] mlibc {
         return 0;
     }
 
+    int sys_access(const char *path, int mode) {
+        auto ret = __syscall2(21, (long)path, mode);
+        if (int e = sc_error(ret); e)
+            return e;
+        return 0;
+    }
+
 } //namespace mlibc
 
 extern "C" { 

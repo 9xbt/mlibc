@@ -4,6 +4,7 @@
 #include <abi-bits/seek-whence.h>
 #include <abi-bits/vm-flags.h>
 #include <abi-bits/termios.h>
+#include <abi-bits/resource.h>
 #include <bits/off_t.h>
 #include <bits/ssize_t.h>
 #include <abi-bits/stat.h>
@@ -211,6 +212,14 @@ namespace [[gnu::visibility("hidden")]] mlibc {
         auto ret = __syscall2(21, (long)path, mode);
         if (int e = sc_error(ret); e)
             return e;
+        return 0;
+    }
+
+    int sys_waitpid(pid_t pid, int *status, int flags, struct rusage *ru, pid_t *ret_pid) {
+        auto ret = __syscall4(61 /* sys_wait4 */, pid, (long)status, flags, (long)ru);
+        if (int e = sc_error(ret); e)
+            return e;
+        *ret_pid = (pid_t)ret;
         return 0;
     }
 

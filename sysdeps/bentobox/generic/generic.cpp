@@ -235,6 +235,77 @@ namespace [[gnu::visibility("hidden")]] mlibc {
         return 0;
     }
 
+    int sys_getpid() {
+        return __syscall0(SYS_gettid);;
+    }
+
+    [[gnu::weak]] int sys_rename(const char *path, const char *new_path) {
+        auto ret = __syscall2(82, (long)path, (long)new_path);
+        return sc_error(ret);
+    }
+
+    [[gnu::weak]] int sys_sigaction(int signum,
+                                const struct sigaction *__restrict act,
+                                struct sigaction *__restrict oldact) {
+        size_t sigsetsize = sizeof(sigset_t);
+        long ret = __syscall4(13, signum, (long)act, (long)oldact, sigsetsize);
+
+        if (ret < 0 && ret > -4096) {
+            errno = -ret;
+            return -1;
+        }
+
+        return 0;
+    }
+
+    [[gnu::weak]] uid_t sys_getuid() {
+        return __syscall0(102);
+    }
+
+    [[gnu::weak]] gid_t sys_getgid() {
+        return __syscall0(104);
+    }
+
+    [[gnu::weak]] gid_t sys_geteuid() {
+        return __syscall0(107);
+    }
+
+    [[gnu::weak]] gid_t sys_getegid() {
+        return __syscall0(108);
+    }
+
+    [[gnu::weak]] int sys_sigprocmask(int how, const sigset_t *set, sigset_t *oldset) {
+        if (oldset) {
+            sigemptyset(oldset);
+        }
+        return 0;
+    }
+
+    [[gnu::weak]] int sys_gethostname(char *name, size_t len) {
+        const char *dummy = "mlibc-host";
+        size_t i;
+        for (i = 0; i < len - 1 && dummy[i]; i++) {
+            name[i] = dummy[i];
+        }
+        name[i] = '\0';
+        return 0;
+    }
+
+    [[gnu::weak]] pid_t sys_getppid() {
+        return __syscall0(110);
+    }
+
+    [[gnu::weak]] int sys_getpgid(pid_t pid, pid_t *pgid) {
+        if (!pgid)
+            return -1;
+
+        auto ret = __syscall0(121);
+        if (ret < 0)
+            return -1;
+        *pgid = pid;
+        return 0;
+    }
+
 } //namespace mlibc
 
 extern "C" { 

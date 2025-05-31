@@ -12,6 +12,7 @@
 #define SYS_munmap      11
 #define SYS_ioctl       16
 #define SYS_access      21
+#define SYS_getpid      39
 #define SYS_clone       56
 #define SYS_execve      59
 #define SYS_exit        60

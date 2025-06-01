@@ -1,1 +1,1 @@
-../../../../abis/linux/dev_t.h
+/home/xrc2/src/bentobox-rewrite/mlibc/abis/bentobox/dev_t.h

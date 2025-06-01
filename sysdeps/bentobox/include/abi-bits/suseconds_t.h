@@ -1,1 +1,1 @@
-../../../../abis/linux/suseconds_t.h
+/home/xrc2/src/bentobox-rewrite/mlibc/abis/bentobox/suseconds_t.h

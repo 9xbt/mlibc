@@ -1,1 +1,1 @@
-../../../../abis/linux/uid_t.h
+/home/xrc2/src/bentobox-rewrite/mlibc/abis/bentobox/uid_t.h

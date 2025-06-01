@@ -1,1 +1,1 @@
-../../../../abis/linux/ino_t.h
+/home/xrc2/src/bentobox-rewrite/mlibc/abis/bentobox/ino_t.h

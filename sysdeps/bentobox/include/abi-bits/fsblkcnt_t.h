@@ -1,1 +1,1 @@
-../../../../abis/linux/fsblkcnt_t.h
+/home/xrc2/src/bentobox-rewrite/mlibc/abis/bentobox/fsblkcnt_t.h

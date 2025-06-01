@@ -15,6 +15,8 @@
 #include "syscall.h"
 #include <string.h>
 #include <stdio.h>
+#include <stdarg.h>
+#include <termios.h>
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
@@ -177,9 +179,13 @@ namespace [[gnu::visibility("hidden")]] mlibc {
         return 0;
     }
 
-    int sys_ioctl(int fd, unsigned long request, void *arg) {
+    int sys_ioctl(int fd, unsigned long request, void *arg, int *result) {
         auto ret = __syscall3(SYS_ioctl, fd, request, (long)arg);
-        return sc_error(ret);
+        if (int e = sc_error(ret); e)
+            return e;
+        if (result)
+            *result = ret;
+        return 0;
     }
     
     int sys_clock_get(int clock, time_t *secs, long *nanos) {
@@ -236,7 +242,7 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     }
 
     int sys_getpid() {
-        return __syscall0(SYS_gettid);;
+        return __syscall0(39);
     }
 
     [[gnu::weak]] int sys_rename(const char *path, const char *new_path) {
@@ -244,19 +250,16 @@ namespace [[gnu::visibility("hidden")]] mlibc {
         return sc_error(ret);
     }
 
-    [[gnu::weak]] int sys_sigaction(int signum,
-                                const struct sigaction *__restrict act,
-                                struct sigaction *__restrict oldact) {
-        size_t sigsetsize = sizeof(sigset_t);
-        long ret = __syscall4(13, signum, (long)act, (long)oldact, sigsetsize);
-
-        if (ret < 0 && ret > -4096) {
-            errno = -ret;
-            return -1;
-        }
-
+    int sys_sigaction(int signum, const struct sigaction *act, struct sigaction *oldact) {
         return 0;
     }
+
+    int sys_sigprocmask(int how, const sigset_t *set, sigset_t *old) {
+        auto ret = __syscall4(14, how, (long)set, (long)old, NSIG / 8);
+        if (int e = sc_error(ret); e)
+            return e;
+        return 0;
+    }    
 
     [[gnu::weak]] uid_t sys_getuid() {
         return __syscall0(102);
@@ -274,13 +277,6 @@ namespace [[gnu::visibility("hidden")]] mlibc {
         return __syscall0(108);
     }
 
-    [[gnu::weak]] int sys_sigprocmask(int how, const sigset_t *set, sigset_t *oldset) {
-        if (oldset) {
-            sigemptyset(oldset);
-        }
-        return 0;
-    }
-
     [[gnu::weak]] int sys_gethostname(char *name, size_t len) {
         const char *dummy = "mlibc-host";
         size_t i;
@@ -295,14 +291,59 @@ namespace [[gnu::visibility("hidden")]] mlibc {
         return __syscall0(110);
     }
 
-    [[gnu::weak]] int sys_getpgid(pid_t pid, pid_t *pgid) {
+    int sys_getpgid(pid_t pid, pid_t *pgid) {
         if (!pgid)
-            return -1;
+            return EINVAL;
 
-        auto ret = __syscall0(121);
-        if (ret < 0)
-            return -1;
-        *pgid = pid;
+        auto ret = __syscall1(121, pid);
+        if (int e = sc_error(ret); e)
+            return e;
+        *pgid = ret;
+        return 0;
+    }
+
+    int sys_openat(int dirfd, const char *path, int flags, mode_t mode, int *fd) {
+        auto ret = __syscall4(257, dirfd, (long)path, flags, mode);
+        if (int e = sc_error(ret); e)
+            return e;
+        *fd = (int)ret;
+        return 0;
+    }
+
+    int sys_dup(int fd, int flags, int *newfd) {
+        auto ret = __syscall1(32 /* SYS_dup */, fd);
+        if (int e = sc_error(ret); e)
+            return e;
+        *newfd = ret;
+        return 0;
+    }
+
+    int sys_setpgid(pid_t pid, pid_t pgid) {
+        auto ret = __syscall2(109, pid, pgid);
+        if (int e = sc_error(ret); e)
+            return e;
+        return 0;
+    }
+
+    int sys_tcgetpgrp(int fd, pid_t *pgid) {
+        auto ret = __syscall3(SYS_ioctl, fd, 0x540F /* TIOCGPGRP */, (long)pgid);
+        return sc_error(ret);
+    }
+
+    int sys_tcsetpgrp(int fd, pid_t pgid) {
+        auto ret = __syscall3(SYS_ioctl, fd, 0x5410 /* TIOCSPGRP */, (long)&pgid);
+        return sc_error(ret);
+    }
+
+    int sys_fcntl(int fd, int cmd, va_list args, int *result) {
+        return 0;
+    }
+
+    int sys_tcgetattr(int fd, struct termios *attrs) {
+        return 0;
+    }
+
+    int sys_tcsetattr(int fd, int optional_actions, const struct termios *attrs) {
         return 0;
     }
 

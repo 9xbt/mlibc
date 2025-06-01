@@ -1,1 +1,1 @@
-../../../../abis/linux/nlink_t.h
+/home/xrc2/src/bentobox-rewrite/mlibc/abis/bentobox/nlink_t.h

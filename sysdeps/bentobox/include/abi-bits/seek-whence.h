@@ -1,1 +1,1 @@
-../../../../abis/linux/seek-whence.h
+/home/xrc2/src/bentobox-rewrite/mlibc/abis/bentobox/seek-whence.h

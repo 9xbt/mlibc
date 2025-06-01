@@ -1,1 +1,1 @@
-../../../../abis/linux/stat.h
+/home/xrc2/src/bentobox-rewrite/mlibc/abis/bentobox/stat.h

@@ -1,1 +1,1 @@
-../../../../abis/linux/inotify.h
+/home/xrc2/src/bentobox-rewrite/mlibc/abis/bentobox/inotify.h

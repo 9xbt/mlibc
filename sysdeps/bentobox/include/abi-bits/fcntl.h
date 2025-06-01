@@ -1,1 +1,1 @@
-../../../../abis/linux/fcntl.h
+/home/xrc2/src/bentobox-rewrite/mlibc/abis/bentobox/fcntl.h

@@ -242,7 +242,7 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     }
 
     int sys_getpid() {
-        return __syscall0(39);
+        return __syscall0(SYS_getpid);
     }
 
     [[gnu::weak]] int sys_rename(const char *path, const char *new_path) {
@@ -255,7 +255,7 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     }
 
     int sys_sigprocmask(int how, const sigset_t *set, sigset_t *old) {
-        auto ret = __syscall4(14, how, (long)set, (long)old, NSIG / 8);
+        auto ret = __syscall4(SYS_rt_sigprocmsk, how, (long)set, (long)old, NSIG / 8);
         if (int e = sc_error(ret); e)
             return e;
         return 0;

@@ -310,6 +310,13 @@ namespace [[gnu::visibility("hidden")]] mlibc {
         return 0;
     }
 
+    int sys_uname(struct utsname *buf) {
+        auto ret = __syscall1(SYS_uname, (long)buf);
+        if (int e = sc_error(ret); e)
+            return e;
+        return 0;
+    }
+
     pid_t sys_getppid() {
         return __syscall0(SYS_getppid);
     }

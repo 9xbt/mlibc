@@ -251,7 +251,12 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     }
 
     int sys_sigaction(int signum, const struct sigaction *act, struct sigaction *oldact) {
-        return 0;
+        if (!act) {
+            auto ret = __syscall4(SYS_rt_sigaction, signum, 0, (long)oldact, 8);
+            return sc_error(ret);
+        }
+        
+        return ENOSYS;
     }
 
     int sys_sigprocmask(int how, const sigset_t *set, sigset_t *old) {
@@ -259,7 +264,7 @@ namespace [[gnu::visibility("hidden")]] mlibc {
         if (int e = sc_error(ret); e)
             return e;
         return 0;
-    }    
+    }
 
     [[gnu::weak]] uid_t sys_getuid() {
         return __syscall0(SYS_getuid);

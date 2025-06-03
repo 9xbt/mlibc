@@ -6,6 +6,8 @@
 #include <abi-bits/termios.h>
 #include <abi-bits/resource.h>
 #include <abi-bits/fcntl.h>
+#include <abi-bits/utsname.h>
+#include <abi-bits/termios.h>
 #include <bits/off_t.h>
 #include <bits/ssize_t.h>
 #include <abi-bits/stat.h>
@@ -16,7 +18,6 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdarg.h>
-#include <termios.h>
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
@@ -283,7 +284,23 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     }
 
     [[gnu::weak]] int sys_gethostname(char *name, size_t len) {
-        return -ENOSYS;
+        if (!name)
+            return -EFAULT;
+        if (!len)
+            return -EINVAL;
+
+        struct utsname uname;
+        auto ret = __syscall1(SYS_uname, (long)&uname);
+        if (int e = sc_error(ret); e) {
+            return e;
+        }
+
+        size_t size = strlen(uname.nodename);
+        if (len <= size)
+            return -ENAMETOOLONG;
+        
+        strcpy(name, uname.nodename);
+        return 0;
     }
 
     [[gnu::weak]] pid_t sys_getppid() {

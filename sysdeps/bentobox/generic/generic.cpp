@@ -115,7 +115,7 @@ namespace [[gnu::visibility("hidden")]] mlibc {
         return sc_error(ret);
     }
 
-    [[gnu::weak]] int sys_stat(fsfd_target fsfdt, int fd, const char *path, int flags, struct stat *statbuf) {
+    int sys_stat(fsfd_target fsfdt, int fd, const char *path, int flags, struct stat *statbuf) {
         long ret;
         
         switch (fsfdt) {
@@ -267,23 +267,23 @@ namespace [[gnu::visibility("hidden")]] mlibc {
         return 0;
     }
 
-    [[gnu::weak]] uid_t sys_getuid() {
+    uid_t sys_getuid() {
         return __syscall0(SYS_getuid);
     }
 
-    [[gnu::weak]] gid_t sys_getgid() {
+    gid_t sys_getgid() {
         return __syscall0(SYS_getgid);
     }
 
-    [[gnu::weak]] gid_t sys_geteuid() {
+    gid_t sys_geteuid() {
         return __syscall0(SYS_geteuid);
     }
 
-    [[gnu::weak]] gid_t sys_getegid() {
+    gid_t sys_getegid() {
         return __syscall0(SYS_getegid);
     }
 
-    [[gnu::weak]] int sys_gethostname(char *name, size_t len) {
+    int sys_gethostname(char *name, size_t len) {
         if (!name)
             return -EFAULT;
         if (!len)
@@ -303,7 +303,14 @@ namespace [[gnu::visibility("hidden")]] mlibc {
         return 0;
     }
 
-    [[gnu::weak]] pid_t sys_getppid() {
+    int sys_sethostname(const char *buffer, size_t bufsize) {
+        auto ret = __syscall2(SYS_sethostname, (long)buffer, bufsize);
+        if (int e = sc_error(ret); e)
+            return e;
+        return 0;
+    }
+
+    pid_t sys_getppid() {
         return __syscall0(SYS_getppid);
     }
 

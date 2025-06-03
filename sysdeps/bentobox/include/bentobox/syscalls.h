@@ -26,6 +26,7 @@
 #define SYS_getppid         110
 #define SYS_getpgid         121
 #define SYS_arch_prctl      158
+#define SYS_sethostname     170
 #define SYS_gettid          186
 #define SYS_futex           202
 #define SYS_getdents64      217

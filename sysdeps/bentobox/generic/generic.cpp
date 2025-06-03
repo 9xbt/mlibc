@@ -156,7 +156,7 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     }
 
     [[gnu::weak]] int sys_vm_protect(void *pointer, size_t size, int prot) {
-        auto ret = __syscall3(SYS_mprotect, (long)pointer, size, prot);
+        auto ret = __syscall3(10 /* SYS_mprotect */, (long)pointer, size, prot);
         return sc_error(ret);
     }
 
@@ -246,7 +246,7 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     }
 
     [[gnu::weak]] int sys_rename(const char *path, const char *new_path) {
-        auto ret = __syscall2(82, (long)path, (long)new_path);
+        auto ret = __syscall2(82 /* SYS_rename */, (long)path, (long)new_path);
         return sc_error(ret);
     }
 
@@ -262,40 +262,34 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     }    
 
     [[gnu::weak]] uid_t sys_getuid() {
-        return __syscall0(102);
+        return __syscall0(SYS_getuid);
     }
 
     [[gnu::weak]] gid_t sys_getgid() {
-        return __syscall0(104);
+        return __syscall0(SYS_getgid);
     }
 
     [[gnu::weak]] gid_t sys_geteuid() {
-        return __syscall0(107);
+        return __syscall0(SYS_geteuid);
     }
 
     [[gnu::weak]] gid_t sys_getegid() {
-        return __syscall0(108);
+        return __syscall0(SYS_getegid);
     }
 
     [[gnu::weak]] int sys_gethostname(char *name, size_t len) {
-        const char *dummy = "mlibc-host";
-        size_t i;
-        for (i = 0; i < len - 1 && dummy[i]; i++) {
-            name[i] = dummy[i];
-        }
-        name[i] = '\0';
-        return 0;
+        return -ENOSYS;
     }
 
     [[gnu::weak]] pid_t sys_getppid() {
-        return __syscall0(110);
+        return __syscall0(SYS_getppid);
     }
 
     int sys_getpgid(pid_t pid, pid_t *pgid) {
         if (!pgid)
             return EINVAL;
 
-        auto ret = __syscall1(121, pid);
+        auto ret = __syscall1(SYS_getpgid, pid);
         if (int e = sc_error(ret); e)
             return e;
         *pgid = ret;
@@ -303,7 +297,7 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     }
 
     int sys_openat(int dirfd, const char *path, int flags, mode_t mode, int *fd) {
-        auto ret = __syscall4(257, dirfd, (long)path, flags, mode);
+        auto ret = __syscall4(257 /* SYS_openat */, dirfd, (long)path, flags, mode);
         if (int e = sc_error(ret); e)
             return e;
         *fd = (int)ret;
@@ -311,7 +305,7 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     }
 
     int sys_dup(int fd, int flags, int *newfd) {
-        auto ret = __syscall1(32 /* SYS_dup */, fd);
+        auto ret = __syscall1(SYS_dup, fd);
         if (int e = sc_error(ret); e)
             return e;
         *newfd = ret;
@@ -319,7 +313,7 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     }
 
     int sys_setpgid(pid_t pid, pid_t pgid) {
-        auto ret = __syscall2(109, pid, pgid);
+        auto ret = __syscall2(109 /* SYS_setpgid */, pid, pgid);
         if (int e = sc_error(ret); e)
             return e;
         return 0;

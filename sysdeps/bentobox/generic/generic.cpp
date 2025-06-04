@@ -377,6 +377,14 @@ namespace [[gnu::visibility("hidden")]] mlibc {
         return 0;
     }
 
+    #define TIOCGNAME   0x5483
+
+    int sys_ttyname(int fd, char *buf, size_t size) {
+        int ret;
+        sys_ioctl(fd, TIOCGNAME, buf, &ret);
+        return 0;
+    }
+
 } //namespace mlibc
 
 extern "C" { 

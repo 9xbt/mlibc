@@ -8,9 +8,11 @@
 #define SYS_lseek           8
 #define SYS_mmap            9
 #define SYS_munmap          11
+#define SYS_brk             12
 #define SYS_rt_sigaction    13
-#define SYS_rt_sigprocmsk   14
+#define SYS_rt_sigprocmask  14
 #define SYS_ioctl           16
+#define SYS_writev          20
 #define SYS_access          21
 #define SYS_dup             32
 #define SYS_getpid          39
@@ -30,5 +32,6 @@
 #define SYS_gettid          186
 #define SYS_futex           202
 #define SYS_getdents64      217
+#define SYS_set_tid_address 218
 #define SYS_clock_gettime   228
 #define SYS_newfstatat      262

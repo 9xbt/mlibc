@@ -261,7 +261,7 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     }
 
     int sys_sigprocmask(int how, const sigset_t *set, sigset_t *old) {
-        auto ret = __syscall4(SYS_rt_sigprocmsk, how, (long)set, (long)old, NSIG / 8);
+        auto ret = __syscall4(SYS_rt_sigprocmask, how, (long)set, (long)old, NSIG / 8);
         if (int e = sc_error(ret); e)
             return e;
         return 0;

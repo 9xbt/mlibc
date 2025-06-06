@@ -1,1 +1,1 @@
-/home/xrc2/src/bentobox-rewrite/mlibc/abis/bentobox/auxv.h
+../../../abis/bentobox/auxv.h

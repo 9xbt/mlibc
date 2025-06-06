@@ -1,1 +1,1 @@
-/home/xrc2/src/bentobox-rewrite/mlibc/abis/bentobox/inotify.h
+../../../abis/bentobox/inotify.h

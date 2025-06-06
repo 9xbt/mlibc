@@ -1,1 +1,1 @@
-/home/xrc2/src/bentobox-rewrite/mlibc/abis/bentobox/mode_t.h
+../../../abis/bentobox/mode_t.h

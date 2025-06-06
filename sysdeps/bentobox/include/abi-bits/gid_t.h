@@ -1,1 +1,1 @@
-/home/xrc2/src/bentobox-rewrite/mlibc/abis/bentobox/gid_t.h
+../../../abis/bentobox/gid_t.h

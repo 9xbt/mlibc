@@ -1,1 +1,1 @@
-/home/xrc2/src/bentobox-rewrite/mlibc/abis/bentobox/mqueue.h
+../../../abis/bentobox/mqueue.h

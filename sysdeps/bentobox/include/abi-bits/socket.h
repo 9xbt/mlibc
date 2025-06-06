@@ -1,1 +1,1 @@
-/home/xrc2/src/bentobox-rewrite/mlibc/abis/bentobox/socket.h
+../../../abis/bentobox/socket.h

@@ -1,1 +1,1 @@
-/home/xrc2/src/bentobox-rewrite/mlibc/abis/bentobox/ptrace.h
+../../../abis/bentobox/ptrace.h

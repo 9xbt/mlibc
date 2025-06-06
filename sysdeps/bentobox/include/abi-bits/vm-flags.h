@@ -1,1 +1,1 @@
-/home/xrc2/src/bentobox-rewrite/mlibc/abis/bentobox/vm-flags.h
+../../../abis/bentobox/vm-flags.h

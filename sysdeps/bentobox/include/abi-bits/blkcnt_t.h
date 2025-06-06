@@ -1,1 +1,1 @@
-/home/xrc2/src/bentobox-rewrite/mlibc/abis/bentobox/blkcnt_t.h
+../../../abis/bentobox/blkcnt_t.h

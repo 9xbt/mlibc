@@ -1,1 +1,1 @@
-/home/xrc2/src/bentobox-rewrite/mlibc/abis/bentobox/signal.h
+../../../abis/bentobox/signal.h

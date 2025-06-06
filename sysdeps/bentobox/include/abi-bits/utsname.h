@@ -1,1 +1,1 @@
-/home/xrc2/src/bentobox-rewrite/mlibc/abis/bentobox/utsname.h
+../../../abis/bentobox/utsname.h

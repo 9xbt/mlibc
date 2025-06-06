@@ -1,1 +1,1 @@
-/home/xrc2/src/bentobox-rewrite/mlibc/abis/bentobox/errno.h
+../../../abis/bentobox/errno.h

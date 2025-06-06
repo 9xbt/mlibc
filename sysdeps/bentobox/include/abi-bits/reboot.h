@@ -1,1 +1,1 @@
-/home/xrc2/src/bentobox-rewrite/mlibc/abis/bentobox/reboot.h
+../../../abis/bentobox/reboot.h

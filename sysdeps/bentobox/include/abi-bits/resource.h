@@ -1,1 +1,1 @@
-/home/xrc2/src/bentobox-rewrite/mlibc/abis/bentobox/resource.h
+../../../abis/bentobox/resource.h

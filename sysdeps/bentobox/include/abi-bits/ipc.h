@@ -1,1 +1,1 @@
-/home/xrc2/src/bentobox-rewrite/mlibc/abis/bentobox/ipc.h
+../../../abis/bentobox/ipc.h

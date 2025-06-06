@@ -1,1 +1,1 @@
-../../../abis/bentobox/ipc.h
+../../../../abis/bentobox/ipc.h

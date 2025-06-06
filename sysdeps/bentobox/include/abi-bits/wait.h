@@ -1,1 +1,1 @@
-../../../abis/bentobox/wait.h
+../../../../abis/bentobox/wait.h

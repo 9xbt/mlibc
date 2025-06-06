@@ -1,1 +1,1 @@
-../../../abis/bentobox/resource.h
+../../../../abis/bentobox/resource.h

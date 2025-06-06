@@ -1,1 +1,1 @@
-../../../abis/bentobox/msg.h
+../../../../abis/bentobox/msg.h

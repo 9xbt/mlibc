@@ -348,6 +348,13 @@ namespace [[gnu::visibility("hidden")]] mlibc {
         return 0;
     }
 
+    int sys_dup2(int fd, int flags, int newfd) {
+        auto ret = __syscall3(SYS_dup3, fd, newfd, flags);
+        if(int e = sc_error(ret); e)
+            return e;
+        return 0;
+    }
+
     int sys_setpgid(pid_t pid, pid_t pgid) {
         auto ret = __syscall2(109 /* SYS_setpgid */, pid, pgid);
         if (int e = sc_error(ret); e)
@@ -366,7 +373,31 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     }
 
     int sys_fcntl(int fd, int cmd, va_list args, int *result) {
-        return 0;
+        long arg;
+        
+        switch(cmd) {
+            case F_DUPFD: {
+                arg = va_arg(args, long);
+                auto ret = __syscall3(SYS_fcntl, fd, cmd, arg);
+                if (int e = sc_error(ret); e)
+                    return e;
+                *result = ret;
+                return 0;
+            }
+            case F_GETFD:
+            case F_SETFD:
+            case F_GETFL:
+            case F_SETFL: {
+                arg = va_arg(args, long);
+                auto ret = __syscall3(SYS_fcntl, fd, cmd, arg);
+                if (int e = sc_error(ret); e)
+                    return e;
+                *result = ret;
+                return 0;
+            }
+            default:
+                return ENOSYS;
+        }
     }
 
     int sys_tcgetattr(int fd, struct termios *attrs) {
@@ -382,6 +413,14 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     int sys_ttyname(int fd, char *buf, size_t size) {
         int ret;
         sys_ioctl(fd, TIOCGNAME, buf, &ret);
+        return 0;
+    }
+
+    int sys_readlink(const char *path, void *buf, size_t bufsiz, ssize_t *len) {
+        auto ret = __syscall3(SYS_readlink, (long)path, (long)buf, bufsiz);
+        if (int e = sc_error(ret); e)
+            return e;
+        *len = ret;
         return 0;
     }
 

@@ -14,6 +14,7 @@
 #define SYS_rt_sigaction    13
 #define SYS_rt_sigprocmask  14
 #define SYS_ioctl           16
+#define SYS_readv           19
 #define SYS_writev          20
 #define SYS_access          21
 #define SYS_dup             32
@@ -29,6 +30,8 @@
 #define SYS_fcntl           72
 #define SYS_getcwd          79
 #define SYS_chdir           80
+#define SYS_mkdir           83
+#define SYS_rmdir           84
 #define SYS_unlink          87
 #define SYS_readlink        89
 #define SYS_getuid          102

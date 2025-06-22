@@ -207,8 +207,7 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     }
 
     int sys_fork(pid_t *child) {
-        fflush(stdout);
-        auto ret = __syscall2(SYS_clone, SIGCHLD, 0);
+        auto ret = __syscall0(SYS_fork);
         if (int e = sc_error(ret); e)
             return e;
         *child = (pid_t)ret;
@@ -425,17 +424,17 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     }
 
     int sys_chdir(const char *path) {
-	auto ret = __syscall1(SYS_chdir, (long)path);
-	if (int e = sc_error(ret); e)
-	    return e;
-	return 0;
+        auto ret = __syscall1(SYS_chdir, (long)path);
+        if (int e = sc_error(ret); e)
+            return e;
+        return 0;
     }
 
     int sys_getcwd(char *buf, size_t size) {
-	auto ret = __syscall2(SYS_getcwd, (long)buf, size);
-	if (int e = sc_error(ret); e)
-	    return e;
-	return 0;
+        auto ret = __syscall2(SYS_getcwd, (long)buf, size);
+        if (int e = sc_error(ret); e)
+            return e;
+        return 0;
     }     
 
 } //namespace mlibc

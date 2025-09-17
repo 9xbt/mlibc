@@ -273,6 +273,10 @@ elif host_machine.system() == 'nyaux'
 	rtld_include_dirs += include_directories('sysdeps/nyaux/include')
 	libc_include_dirs += include_directories('sysdeps/nyaux/include')
 	subdir('sysdeps/nyaux')
+elif host_machine.system() == 'bentobox'
+	rtld_include_dirs += include_directories('sysdeps/bentobox/include')
+	libc_include_dirs += include_directories('sysdeps/bentobox/include')
+	subdir('sysdeps/bentobox')
 else
 	error('No sysdeps defined for OS: ' + host_machine.system())
 endif

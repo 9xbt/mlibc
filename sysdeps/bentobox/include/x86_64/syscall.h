@@ -1,5 +1,4 @@
 #pragma once
-#include <stddef.h>
 
 static __inline long __syscall0(long n)
 {

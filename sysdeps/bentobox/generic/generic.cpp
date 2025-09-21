@@ -1,7 +1,8 @@
-#include "mlibc/tid.hpp"
 #include <stddef.h>
+#include <stdint.h>
 #include <string.h>
 #include <errno.h>
+#include <termios.h>
 
 #include <abi-bits/seek-whence.h>
 #include <abi-bits/vm-flags.h>
@@ -23,6 +24,7 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     }
 
     [[noreturn]] void sys_libc_panic() {
+        __syscall3(SYS_write, 2, (long)"\n", 1);
         __syscall1(SYS_exit, 1);
         __builtin_unreachable();
     }
@@ -46,7 +48,7 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     int sys_vm_map(void *hint, size_t size, int prot, int flags, int fd, off_t offset, void **window) {
         auto ret = __syscall6(SYS_mmap, (long)hint, (long)size, (long)prot, (long)flags, (long)fd, (long)offset);
         if (ret < 0)
-            return ret;
+            return -ret;
         *window = (void *)ret;
         return 0;
     }
@@ -66,7 +68,7 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     int sys_open(const char *pathname, int flags, mode_t mode, int *fd) {
         auto ret = __syscall3(SYS_open, (long)pathname, flags, mode);
         if (ret < 0)
-            return ret;
+            return -ret;
         *fd = ret;
         return 0;
     }
@@ -74,7 +76,7 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     int sys_read(int fd, void *buf, size_t len, ssize_t *read) {
         auto ret = __syscall3(SYS_read, fd, (long)buf, len);
         if (ret < 0)
-            return ret;
+            return -ret;
         *read = ret;
         return 0;
     }
@@ -82,7 +84,7 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     int sys_write(int fd, const void *buf, size_t len, ssize_t *written) {
         auto ret = __syscall3(SYS_write, fd, (long)buf, len);
         if (ret < 0)
-            return ret;
+            return -ret;
         *written = ret;
         return 0;
     }
@@ -90,7 +92,7 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     int sys_seek(int fd, off_t offset, int whence, off_t *seek) {
         auto ret = __syscall3(SYS_seek, fd, offset, whence);
         if (ret < 0)
-            return ret;
+            return -ret;
         *seek = ret;
         return 0;
     }
@@ -104,6 +106,14 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     }
 
     int sys_clock_get(int clock, time_t *secs, long *nanos) {
+        return 0;
+    }
+
+    int sys_isatty(int fd) {
+        char _[8];
+        auto ret = __syscall3(SYS_ioctl, fd, TIOCGWINSZ, (long)_);
+        if (ret < 0)
+            return 1;
         return 0;
     }
 

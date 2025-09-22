@@ -3,13 +3,16 @@
 #include <string.h>
 #include <errno.h>
 #include <termios.h>
+#include <fcntl.h>
 
 #include <abi-bits/seek-whence.h>
 #include <abi-bits/vm-flags.h>
+#include <abi-bits/signal.h>
 #include <bits/off_t.h>
 #include <bits/ssize_t.h>
 #include <abi-bits/stat.h>
 #include <mlibc/fsfd_target.hpp>
+#include <mlibc/all-sysdeps.hpp>
 
 #include <syscall.h>
 
@@ -30,11 +33,11 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     }
 
     int sys_tcb_set(void *pointer) {
-        return __syscall1(SYS_set_tls, (long)pointer);
+        return -__syscall1(SYS_set_tls, (long)pointer);
     }
 
     [[gnu::weak]] int sys_futex_tid() {
-        return 0;
+        return __syscall0(SYS_gettid);
     }
 
     int sys_futex_wait(int *pointer, int expected, const struct timespec *time) {
@@ -54,7 +57,7 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     }
 
     int sys_vm_unmap(void *pointer, size_t size) {
-        return __syscall2(SYS_munmap, (long)pointer, size);
+        return -__syscall2(SYS_munmap, (long)pointer, size);
     }
 
     int sys_anon_allocate(size_t size, void **pointer) {
@@ -98,15 +101,16 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     }
 
     int sys_close(int fd) {
-        return __syscall1(SYS_close, fd);
+        return -__syscall1(SYS_close, fd);
     }
 
-    int sys_exit(int status) {
-        return __syscall1(SYS_exit, status);
+    void sys_exit(int status) {
+        __syscall1(SYS_exit, status);
+        __builtin_unreachable();
     }
 
     int sys_clock_get(int clock, time_t *secs, long *nanos) {
-        return 0;
+        return -ENOSYS;
     }
 
     int sys_isatty(int fd) {
@@ -114,6 +118,67 @@ namespace [[gnu::visibility("hidden")]] mlibc {
         auto ret = __syscall3(SYS_ioctl, fd, TIOCGWINSZ, (long)_);
         if (ret < 0)
             return 1;
+        return 0;
+    }
+
+    pid_t sys_getpid() {
+        return __syscall0(SYS_getpid);
+    }
+
+    pid_t sys_gettid() {
+        return __syscall0(SYS_gettid);
+    }
+
+    pid_t sys_getppid() {
+        return __syscall0(SYS_getppid);
+    }
+
+    pid_t sys_getpgid(pid_t pid, pid_t *pgid) {
+        *pgid = 0;
+        return 0;
+    }
+
+    int sys_stat(fsfd_target fsfdt, int fd, const char *path, int flags, struct stat *statbuf) {
+        if (fsfdt == fsfd_target::path)
+            fd = AT_FDCWD;
+        else if (fsfdt == fsfd_target::fd)
+            flags |= AT_EMPTY_PATH;
+
+        return -__syscall4(SYS_fstatat, fd, (long)path, (long)statbuf, flags);
+    }
+
+    int sys_ioctl(int fd, unsigned long request, void *arg, int *result) {
+        auto ret = __syscall3(SYS_ioctl, fd, request, (long)arg);
+        if (ret < 0)
+            return -ret;
+        *result = ret;
+        return 0;
+    }
+
+    int sys_sigprocmask(int how, const sigset_t *__restrict set, sigset_t *__restrict retrieve) {
+        return 0;
+    }
+
+    int sys_sigaction(int how, const struct sigaction *__restrict action, struct sigaction *__restrict old_action) {
+        return 0;
+    }
+
+    int sys_ttyname(int fd, char *buf, size_t size) {
+        strcpy(buf, "/dev/console");
+        return 0;
+    }
+
+    int sys_getresuid(uid_t *ruid, uid_t *euid, uid_t *suid) {
+        *ruid = 0;
+        *euid = 0;
+        *suid = 0;
+        return 0;
+    }
+    
+    int sys_getresgid(uid_t *rgid, uid_t *egid, uid_t *sgid) {
+        *rgid = 0;
+        *egid = 0;
+        *sgid = 0;
         return 0;
     }
 

@@ -195,6 +195,10 @@ namespace [[gnu::visibility("hidden")]] mlibc {
         __builtin_unreachable();
     }
 
+    [[gnu::used]] int sys_uname(struct utsname *buf) {
+        return -__syscall1(SYS_uname, (long)buf);
+    }
+
 } //namespace mlibc
 
 extern "C" { 

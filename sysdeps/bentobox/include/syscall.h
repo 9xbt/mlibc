@@ -26,3 +26,5 @@
 #define SYS_mmap    20
 #define SYS_munmap  21
 #define SYS_set_tls 22
+
+#define SYS_uname   30

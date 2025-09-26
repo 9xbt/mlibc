@@ -182,6 +182,19 @@ namespace [[gnu::visibility("hidden")]] mlibc {
         return 0;
     }
 
+    int sys_fork(pid_t *child) {
+        auto ret = __syscall0(SYS_fork);
+        if (ret < 0)
+            return -ret;
+        *child = ret;
+        return 0;
+    }
+
+    int sys_execve(const char *path, char *const argv[], char *const envp[]) {
+        __syscall3(SYS_exec, (long)path, (long)argv, (long)envp);
+        __builtin_unreachable();
+    }
+
 } //namespace mlibc
 
 extern "C" { 

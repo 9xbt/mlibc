@@ -195,8 +195,16 @@ namespace [[gnu::visibility("hidden")]] mlibc {
         __builtin_unreachable();
     }
 
-    [[gnu::used]] int sys_uname(struct utsname *buf) {
+    int sys_uname(struct utsname *buf) {
         return -__syscall1(SYS_uname, (long)buf);
+    }
+
+    int sys_waitpid(pid_t pid, int *status, int flags, struct rusage *ru, pid_t *ret_pid) {
+        auto ret = __syscall3(SYS_wait4, pid, (long)status, flags);
+        if (ret < 0)
+            return -ret;
+        *ret_pid = ret;
+        return 0;
     }
 
 } //namespace mlibc

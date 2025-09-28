@@ -5,9 +5,11 @@
 #include <termios.h>
 #include <fcntl.h>
 
+#include <asm/ioctls.h>
 #include <abi-bits/seek-whence.h>
 #include <abi-bits/vm-flags.h>
 #include <abi-bits/signal.h>
+#include <abi-bits/ioctls.h>
 #include <bits/off_t.h>
 #include <bits/ssize_t.h>
 #include <abi-bits/stat.h>
@@ -200,10 +202,46 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     }
 
     int sys_waitpid(pid_t pid, int *status, int flags, struct rusage *ru, pid_t *ret_pid) {
-        auto ret = __syscall3(SYS_wait4, pid, (long)status, flags);
+        auto ret = __syscall3(SYS_waitpid, pid, (long)status, flags);
         if (ret < 0)
             return -ret;
         *ret_pid = ret;
+        return 0;
+    }
+
+    int sys_gethostname(char *buf, size_t bufsize) {
+        struct utsname utsname;
+        auto ret = __syscall1(SYS_uname, (long)&utsname);
+        if (ret < 0)
+            return -ret;
+        strncpy(buf, utsname.nodename, bufsize);
+        return 0;
+    }
+
+    int sys_getcwd(char *buf, size_t size) {
+        strncpy(buf, "/", size);
+        return 0;
+    }
+
+    int sys_dup(int fd, int flags, int *newfd) {
+        auto ret = __syscall3(SYS_dup, fd, -1, flags);
+        if (ret < 0)
+            return -ret;
+        *newfd = ret;
+        return 0;
+    }
+
+    int sys_dup2(int fd, int flags, int newfd) {
+        auto ret = __syscall3(SYS_dup, fd, newfd, flags);
+        if (ret < 0)
+            return -ret;
+        return 0;
+    }
+
+    int sys_tcgetattr(int fd, struct termios *attr) {
+        auto ret = __syscall3(SYS_ioctl, fd, TCGETS, (long)attr);
+        if (ret < 0)
+            return -ret;
         return 0;
     }
 

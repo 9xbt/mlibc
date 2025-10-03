@@ -1,3 +1,4 @@
+#include "mlibc/ansi-sysdeps.hpp"
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
@@ -71,7 +72,7 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     }
 
     int sys_open(const char *pathname, int flags, mode_t mode, int *fd) {
-        auto ret = __syscall3(SYS_open, (long)pathname, flags, mode);
+        auto ret = __syscall4(SYS_openat, AT_FDCWD, (long)pathname, flags, mode);
         if (ret < 0)
             return -ret;
         *fd = ret;
@@ -193,8 +194,7 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     }
 
     int sys_execve(const char *path, char *const argv[], char *const envp[]) {
-        __syscall3(SYS_exec, (long)path, (long)argv, (long)envp);
-        __builtin_unreachable();
+        return -__syscall3(SYS_exec, (long)path, (long)argv, (long)envp);
     }
 
     int sys_uname(struct utsname *buf) {
@@ -242,6 +242,27 @@ namespace [[gnu::visibility("hidden")]] mlibc {
         auto ret = __syscall3(SYS_ioctl, fd, TCGETS, (long)attr);
         if (ret < 0)
             return -ret;
+        return 0;
+    }
+
+    int sys_fcntl(int fd, int request, va_list args, int *result) {
+        auto arg = va_arg(args, unsigned long);
+        auto ret = __syscall3(SYS_fcntl, fd, request, arg);
+        if (ret < 0)
+            return -ret;
+        *result = ret;
+        return 0;
+    }
+
+    int sys_open_dir(const char *path, int *fd) {
+        return sys_open(path, O_DIRECTORY, 0, fd);
+    }
+
+    int sys_read_entries(int handle, void *buffer, size_t max_size, size_t *bytes_read) {
+        auto ret = __syscall3(SYS_readdir, handle, (long)buffer, max_size);
+        if (ret < 0)
+            return ret;
+        *bytes_read = ret;
         return 0;
     }
 

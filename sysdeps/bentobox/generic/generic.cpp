@@ -136,7 +136,10 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     }
 
     pid_t sys_getpgid(pid_t pid, pid_t *pgid) {
-        *pgid = 0;
+        auto ret = __syscall1(SYS_getpgid, pid);
+        if (ret < 0)
+            return -ret;
+        *pgid = ret;
         return 0;
     }
 
@@ -266,6 +269,14 @@ namespace [[gnu::visibility("hidden")]] mlibc {
             return ret;
         *bytes_read = ret;
         return 0;
+    }
+
+    int sys_setpgid(pid_t pid, pid_t pgid) {
+        return -__syscall2(SYS_setpgid, pid, pgid);
+    }
+
+    int sys_pipe(int *fds, int flags) {
+        return -__syscall2(SYS_pipe, (long)fds, flags);
     }
 
 } //namespace mlibc

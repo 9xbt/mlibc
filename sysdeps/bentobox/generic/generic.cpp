@@ -1,6 +1,5 @@
 #include "mlibc/ansi-sysdeps.hpp"
 #include <stddef.h>
-#include <stdint.h>
 #include <string.h>
 #include <errno.h>
 #include <termios.h>
@@ -219,8 +218,11 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     }
 
     int sys_getcwd(char *buf, size_t size) {
-        strncpy(buf, "/", size);
-        return 0;
+        return -__syscall2(SYS_getcwd, (long)buf, size);
+    }
+
+    int sys_chdir(const char *path) {
+        return - __syscall1(SYS_chdir, (long)path);
     }
 
     int sys_dup(int fd, int flags, int *newfd) {

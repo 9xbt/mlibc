@@ -120,7 +120,7 @@ namespace [[gnu::visibility("hidden")]] mlibc {
         char _[8];
         auto ret = __syscall3(SYS_ioctl, fd, TIOCGWINSZ, (long)_);
         if (ret < 0)
-            return 1;
+            return ENOTTY;
         return 0;
     }
 

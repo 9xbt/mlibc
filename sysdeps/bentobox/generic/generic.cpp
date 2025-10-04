@@ -279,6 +279,21 @@ namespace [[gnu::visibility("hidden")]] mlibc {
         return -__syscall2(SYS_pipe, (long)fds, flags);
     }
 
+    int sys_sysconf(int num, long *ret) {
+        // respectfully shut the fuck up
+        switch (num) {
+            case _SC_OPEN_MAX:
+                *ret = 256;
+                break;
+            case _SC_CHILD_MAX:
+                *ret = 25;
+                break;
+            default:
+                return EINVAL;
+        }
+        return 0;
+    }
+
 } //namespace mlibc
 
 extern "C" { 

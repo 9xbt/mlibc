@@ -36,3 +36,4 @@
 #define SYS_getcwd  31
 #define SYS_chdir   32
 #define SYS_pipe    33
+#define SYS_ppoll   34

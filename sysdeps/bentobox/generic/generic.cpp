@@ -1,4 +1,5 @@
 #include "mlibc/ansi-sysdeps.hpp"
+#include "mlibc/posix-sysdeps.hpp"
 #include <stddef.h>
 #include <string.h>
 #include <errno.h>
@@ -291,6 +292,59 @@ namespace [[gnu::visibility("hidden")]] mlibc {
             default:
                 return EINVAL;
         }
+        return 0;
+    }
+
+    int sys_tcsetattr(int fd, int op, const struct termios *attr) {
+        switch (op) {
+            case TCSANOW:
+                op = TCSETS;
+                break;
+            case TCSADRAIN:
+                op = TCSETSW;
+                break;
+            case TCSAFLUSH:
+                op = TCSETSF;
+                break;
+            default:
+                return EINVAL;
+        }
+
+        return -__syscall3(SYS_ioctl, fd, op, (long)attr);
+    }
+
+    int sys_pselect(int num_fds, fd_set *read_set, fd_set *write_set, fd_set *except_set, const struct timespec *timeout, const sigset_t *sigmask, int *num_events) {
+        struct pollfd fds[num_fds];
+        for (int i = 0; i < num_fds; i++) {
+            fds[i].fd = i;
+            fds[i].events = 0;
+            fds[i].revents = 0;
+
+            if (read_set && FD_ISSET(i, read_set))
+                fds[i].events |= POLLIN;
+            if (write_set && FD_ISSET(i, write_set))
+                fds[i].events |= POLLOUT;
+            if (except_set && FD_ISSET(i, except_set))
+                fds[i].events |= POLLPRI;
+        }
+
+        auto ret = __syscall4(SYS_ppoll, (long)fds, (long)num_fds, (long)timeout, (long)sigmask);
+        if (ret < 0)
+            return -ret;
+
+        if (read_set) FD_ZERO(read_set);
+        if (write_set) FD_ZERO(write_set);
+        if (except_set) FD_ZERO(except_set);
+
+        for (int i = 0; i < num_fds; i++) {
+            if (fds[i].revents & POLLIN && read_set)
+                FD_SET(i, read_set);
+            if (fds[i].revents & POLLOUT && write_set)
+                FD_SET(i, write_set);
+            if (fds[i].revents & POLLPRI && except_set) 
+                FD_SET(i, except_set);
+        }
+        *num_events = ret;
         return 0;
     }
 

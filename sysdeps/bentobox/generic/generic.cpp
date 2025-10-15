@@ -113,7 +113,13 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     }
 
     int sys_clock_get(int clock, time_t *secs, long *nanos) {
-        return -ENOSYS;
+        struct timespec ts;
+        auto ret = __syscall2(SYS_gettime, clock, (long)&ts);
+        if (ret < 0)
+            return -ret;
+        *secs = ts.tv_sec;
+        *nanos = ts.tv_nsec;
+        return 0;
     }
 
     int sys_isatty(int fd) {
@@ -346,6 +352,14 @@ namespace [[gnu::visibility("hidden")]] mlibc {
         }
         *num_events = ret;
         return 0;
+    }
+
+    int sys_sleep(time_t *sec, long *nanosec) {
+        struct timespec ts = {
+            .tv_sec = *sec,
+            .tv_nsec = *nanosec
+        };
+        return -__syscall1(SYS_sleep, (long)&ts);
     }
 
 } //namespace mlibc

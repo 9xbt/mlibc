@@ -71,12 +71,16 @@ namespace [[gnu::visibility("hidden")]] mlibc {
         return sys_vm_unmap(pointer, size);
     }
 
-    int sys_open(const char *pathname, int flags, mode_t mode, int *fd) {
-        auto ret = __syscall4(SYS_openat, AT_FDCWD, (long)pathname, flags, mode);
+    int sys_openat(int dirfd, const char *path, int flags, mode_t mode, int *fd) {
+        auto ret = __syscall4(SYS_openat, dirfd, (long)path, flags, mode);
         if (ret < 0)
             return -ret;
         *fd = ret;
         return 0;
+    }
+
+    int sys_open(const char *path, int flags, mode_t mode, int *fd) {
+        return sys_openat(AT_FDCWD, path, flags, mode, fd);
     }
 
     int sys_read(int fd, void *buf, size_t len, ssize_t *read) {
@@ -360,6 +364,30 @@ namespace [[gnu::visibility("hidden")]] mlibc {
             .tv_nsec = *nanosec
         };
         return -__syscall1(SYS_sleep, (long)&ts);
+    }
+
+    uid_t sys_geteuid() {
+        return -ENOSYS;
+    }
+    
+    int sys_faccessat(int dirfd, const char *pathname, int mode, int flags) {
+        return -__syscall4(SYS_faccessat, dirfd, (long)pathname, mode, flags);
+    }
+
+    int sys_unlinkat(int dirfd, const char *path, int flags) {
+        return -__syscall3(SYS_unlinkat, dirfd, (long)path, flags);
+    }
+
+    int sys_mkdir(const char *path, mode_t mode) {
+        return -__syscall3(SYS_mkdirat, AT_FDCWD, (long)path, mode);
+    }
+
+    int sys_mkdirat(int dirfd, const char *path, mode_t mode) {
+        return -__syscall3(SYS_mkdirat, dirfd, (long)path, mode);
+    }
+
+    int sys_rmdir(const char *path) {
+        return sys_unlinkat(AT_FDCWD, path, AT_REMOVEDIR);
     }
 
 } //namespace mlibc

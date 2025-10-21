@@ -389,6 +389,87 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     int sys_rmdir(const char *path) {
         return sys_unlinkat(AT_FDCWD, path, AT_REMOVEDIR);
     }
+    
+    int sys_socket(int family, int type, int protocol, int *fd) {
+        auto ret = __syscall3(SYS_socket, family, type, protocol);
+        if (ret < 0)
+            return -ret;
+        *fd = ret;
+        return 0;
+    }
+
+    int sys_bind(int fd, const struct sockaddr *addr_ptr, socklen_t addr_length) {
+        return -__syscall3(SYS_bind, fd, (long)addr_ptr, addr_length);
+    }
+
+    int sys_listen(int fd, int backlog) {
+        return -__syscall2(SYS_listen, fd, backlog);
+    }
+
+    int sys_connect(int fd, const struct sockaddr *addr_ptr, socklen_t addr_length) {
+        return -__syscall3(SYS_connect, fd, (long)addr_ptr, addr_length);
+    }
+
+    int sys_accept(int fd, int *newfd, struct sockaddr *addr_ptr, socklen_t *addr_length, int flags) {
+        (void)flags;
+        auto ret = __syscall3(SYS_accept, fd, (long)addr_ptr, (long)addr_length);
+        if (ret < 0)
+            return -ret;
+        *newfd = ret;
+        return 0;
+    }
+
+    ssize_t sys_sendto(int fd, const void *buffer, size_t size, int flags, const struct sockaddr *sock_addr, socklen_t addr_length, ssize_t *length) {
+        auto ret = __syscall6(SYS_sendto, fd, (long)buffer, size, flags, (long)sock_addr, (long)addr_length);
+        if (ret < 0)
+            return -ret;
+        *length = ret;
+        return 0;
+    }
+
+    ssize_t sys_recvfrom(int fd, void *buffer, size_t size, int flags, struct sockaddr *sock_addr, socklen_t *addr_length, ssize_t *length) {
+        auto ret = __syscall6(SYS_recvfrom, fd, (long)buffer, size, flags, (long)sock_addr, (long)addr_length);
+        if (ret < 0)
+            return -ret;
+        *length = ret;
+        return 0;
+    }
+
+    int sys_msg_send(int fd, const struct msghdr *hdr, int flags, ssize_t *length) {
+        ssize_t len = 0;
+        for (size_t i = 0; i < hdr->msg_iovlen; i++) {
+            const auto &iov = hdr->msg_iov[i];
+            ssize_t chunk_len;
+            
+            if (auto ret = sys_sendto(fd, iov.iov_base, iov.iov_len, flags, (const sockaddr *)hdr->msg_name, hdr->msg_namelen, &chunk_len); ret != 0)
+                return ret;
+            
+            len += chunk_len;
+            if ((size_t)chunk_len < iov.iov_len)
+                break;
+        }
+        
+        *length = len;
+        return 0;
+    }
+
+    int sys_msg_recv(int fd, struct msghdr *hdr, int flags, ssize_t *length) {
+        ssize_t len = 0;
+        for (size_t i = 0; i < hdr->msg_iovlen; i++) {
+            auto &iov = hdr->msg_iov[i];
+            ssize_t chunk_len;
+            
+            if (auto ret = sys_recvfrom(fd, iov.iov_base, iov.iov_len, flags, (sockaddr *)hdr->msg_name, &hdr->msg_namelen, &chunk_len); ret != 0)
+                return ret;
+            
+            len += chunk_len;
+            if ((size_t)chunk_len < iov.iov_len)
+                break;
+        }
+        
+        *length = len;
+        return 0;
+    }
 
 } //namespace mlibc
 

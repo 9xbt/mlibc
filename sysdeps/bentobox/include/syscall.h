@@ -42,3 +42,11 @@
 #define SYS_faccessat 37
 #define SYS_unlinkat  38
 #define SYS_mkdirat   39
+
+#define SYS_socket    40
+#define SYS_bind      41
+#define SYS_listen    42
+#define SYS_connect   43
+#define SYS_accept    44
+#define SYS_recvfrom  45
+#define SYS_sendto    46

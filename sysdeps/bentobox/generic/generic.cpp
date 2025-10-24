@@ -338,7 +338,7 @@ namespace [[gnu::visibility("hidden")]] mlibc {
                 fds[i].events |= POLLPRI;
         }
 
-        auto ret = __syscall4(SYS_ppoll, (long)fds, (long)num_fds, (long)timeout, (long)sigmask);
+        auto ret = __syscall5(SYS_ppoll, (long)fds, (long)num_fds, (long)timeout, (long)sigmask, sizeof(*sigmask));
         if (ret < 0)
             return -ret;
 
@@ -468,6 +468,18 @@ namespace [[gnu::visibility("hidden")]] mlibc {
         }
         
         *length = len;
+        return 0;
+    }
+
+    int sys_poll(struct pollfd *fds, nfds_t count, int timeout, int *num_events) {
+        struct timespec ts = {
+            .tv_sec = timeout / 1000,
+            .tv_nsec = (timeout % 1000) * 1000000
+        };
+        auto ret = __syscall5(SYS_ppoll, (long)fds, (long)count, timeout > 0 ? (long)&ts : 0, 0, 0);
+        if (ret < 0)
+            return -ret;
+        *num_events = ret;
         return 0;
     }
 

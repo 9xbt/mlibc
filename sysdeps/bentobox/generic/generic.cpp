@@ -169,12 +169,12 @@ namespace [[gnu::visibility("hidden")]] mlibc {
         return 0;
     }
 
-    int sys_sigprocmask(int how, const sigset_t *__restrict set, sigset_t *__restrict retrieve) {
-        return 0;
+    int sys_sigaction(int how, const struct sigaction *__restrict action, struct sigaction *__restrict old_action) {
+        return -__syscall3(SYS_sigaction, how, (long)action, (long)old_action);
     }
 
-    int sys_sigaction(int how, const struct sigaction *__restrict action, struct sigaction *__restrict old_action) {
-        return 0;
+    int sys_sigprocmask(int how, const sigset_t *__restrict set, sigset_t *__restrict retrieve) {
+        return -__syscall3(SYS_sigprocmask, how, (long)set, (long)retrieve);
     }
 
     int sys_ttyname(int fd, char *buf, size_t size) {
@@ -487,6 +487,10 @@ namespace [[gnu::visibility("hidden")]] mlibc {
 
     int sys_sethostname(const char *buffer, size_t bufsize) {
         return -__syscall2(SYS_hostname, (long)buffer, bufsize);
+    }
+
+    int sys_tcflow(int fd, int action) {
+        return -__syscall3(SYS_ioctl, fd, TCXONC, action);
     }
 
 } //namespace mlibc

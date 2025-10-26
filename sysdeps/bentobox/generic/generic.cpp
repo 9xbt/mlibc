@@ -1,5 +1,3 @@
-#include "mlibc/ansi-sysdeps.hpp"
-#include "mlibc/posix-sysdeps.hpp"
 #include <stddef.h>
 #include <string.h>
 #include <errno.h>
@@ -485,6 +483,10 @@ namespace [[gnu::visibility("hidden")]] mlibc {
 
     int sys_kill(int pid, int sig) {
         return -__syscall2(SYS_kill, pid, sig);
+    }
+
+    int sys_sethostname(const char *buffer, size_t bufsize) {
+        return -__syscall2(SYS_hostname, (long)buffer, bufsize);
     }
 
 } //namespace mlibc

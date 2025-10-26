@@ -483,6 +483,10 @@ namespace [[gnu::visibility("hidden")]] mlibc {
         return 0;
     }
 
+    int sys_kill(int pid, int sig) {
+        return -__syscall2(SYS_kill, pid, sig);
+    }
+
 } //namespace mlibc
 
 extern "C" { 

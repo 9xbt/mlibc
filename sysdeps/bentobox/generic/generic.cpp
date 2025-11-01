@@ -178,7 +178,7 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     }
 
     int sys_ttyname(int fd, char *buf, size_t size) {
-        strcpy(buf, "/dev/console");
+        strcpy(buf, "/dev/tty1");
         return 0;
     }
 
@@ -364,8 +364,12 @@ namespace [[gnu::visibility("hidden")]] mlibc {
         return -__syscall1(SYS_sleep, (long)&ts);
     }
 
+    uid_t sys_getuid() {
+        return 0;
+    }
+
     uid_t sys_geteuid() {
-        return -ENOSYS;
+        return 0;
     }
     
     int sys_faccessat(int dirfd, const char *pathname, int mode, int flags) {

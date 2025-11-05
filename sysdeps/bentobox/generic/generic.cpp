@@ -297,6 +297,9 @@ namespace [[gnu::visibility("hidden")]] mlibc {
             case _SC_CHILD_MAX:
                 *ret = 25;
                 break;
+            case _SC_LINE_MAX:
+                *ret = 2048;
+                break;
             default:
                 return EINVAL;
         }
@@ -495,6 +498,10 @@ namespace [[gnu::visibility("hidden")]] mlibc {
 
     int sys_tcflow(int fd, int action) {
         return -__syscall3(SYS_ioctl, fd, TCXONC, action);
+    }
+
+    int sys_access(const char *path, int mode) {
+        return sys_faccessat(AT_FDCWD, path, mode, 0);
     }
 
 } //namespace mlibc

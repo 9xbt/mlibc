@@ -65,7 +65,7 @@ int chown(const char *path, uid_t uid, gid_t gid) {
 	return 0;
 }
 
-ssize_t confstr(int name, char *buf, size_t len) {
+size_t confstr(int name, char *buf, size_t len) {
 	const char *str = "";
 	if (name == _CS_PATH) {
 		str = "/bin:/usr/bin";
@@ -822,6 +822,8 @@ long sysconf(int number) {
 		case _SC_OPEN_MAX:
 			mlibc::infoLogger() << "\e[31mmlibc: sysconf(_SC_OPEN_MAX) returns fallback value 256\e[39m" << frg::endlog;
 			return 256;
+		case _SC_TZNAME_MAX:
+			return -1;
 		case _SC_PHYS_PAGES:
 #if __MLIBC_LINUX_OPTION
 			if(mlibc::sys_sysinfo) {
@@ -1075,7 +1077,11 @@ off64_t lseek64(int fd, off64_t offset, int whence) {
 }
 
 int close(int fd) {
-	return mlibc::sys_close(fd);
+	if(int e = mlibc::sys_close(fd); e) {
+		errno = e;
+		return -1;
+	}
+	return 0;
 }
 
 unsigned int sleep(unsigned int secs) {

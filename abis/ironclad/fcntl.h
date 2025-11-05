@@ -10,6 +10,7 @@
 #define O_CLOEXEC   (1 << 3)
 #define O_NOFOLLOW  (1 << 4)
 #define O_NONBLOCK  (1 << 5)
+#define O_CLOFORK   (1 << 6)
 
 /* Flags emulated by userland, we just have to make sure they dont overlap with */
 /* kernel flags. */
@@ -34,6 +35,7 @@
 
 /* Fcntl flags. */
 #define FD_CLOEXEC   1
+#define FD_CLOFORK   2
 #define F_DUPFD 1
 #define F_DUPFD_CLOEXEC 2
 #define F_GETFD      3
@@ -64,7 +66,7 @@
 /* At flags. */
 #define AT_REMOVEDIR        500
 #define AT_EACCESS          512
-#define AT_FDCWD            0x7FFFFFFF
+#define AT_FDCWD            (-100)
 #define AT_EMPTY_PATH       1
 #define AT_SYMLINK_FOLLOW   0
 #define AT_SYMLINK_NOFOLLOW 2

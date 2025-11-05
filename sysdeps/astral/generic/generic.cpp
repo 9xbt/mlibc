@@ -47,6 +47,25 @@ namespace mlibc {
 		return 0;
 	}
 
+	int sys_readv(int fd, const struct iovec *iovs, int iovc, ssize_t *bytes_read) {
+		long r;
+		int error = syscall(SYSCALL_READV, &r, fd, (uint64_t)iovs, iovc);
+		*bytes_read = r;
+		return error;
+	}
+
+	int sys_writev(int fd, const struct iovec *iovs, int iovc, ssize_t *bytes_written) {
+		long r;
+		int error = syscall(SYSCALL_WRITEV, &r, fd, (uint64_t)iovs, iovc);
+		*bytes_written = r;
+		return error;
+	}
+
+	int sys_sysinfo(struct sysinfo *info) {
+		long r;
+		return syscall(SYSCALL_SYSINFO, &r, (uint64_t)info);
+	}
+
 	int sys_getcpu(int *cpu) {
 		long ret;
 		// can never fail
@@ -316,12 +335,12 @@ namespace mlibc {
 
 	int sys_gethostname(char *buffer, size_t bufsize) {
 		long ret;
-		return syscall(SYSCALL_HOSTNAME, &ret, NULL, 0, (uint64_t)buffer, bufsize);
+		return syscall(SYSCALL_HOSTNAME, &ret, 0, 0, (uint64_t)buffer, bufsize);
 	}
 
 	int sys_sethostname(const char *buffer, size_t bufsize) {
 		long ret;
-		return syscall(SYSCALL_HOSTNAME, &ret, (uint64_t)buffer, bufsize, NULL, 0);
+		return syscall(SYSCALL_HOSTNAME, &ret, (uint64_t)buffer, bufsize, 0, 0);
 	}
 
 	int sys_uname(struct utsname *buf) {
@@ -833,7 +852,7 @@ namespace mlibc {
 
 	int sys_futex_wake(int *pointer) {
 		long ret;
-		return syscall(SYSCALL_FUTEX, &ret, (uint64_t)pointer, FUTEX_WAKE, INT_MAX, NULL);
+		return syscall(SYSCALL_FUTEX, &ret, (uint64_t)pointer, FUTEX_WAKE, INT_MAX, 0);
 	}
 
 	int sys_anon_allocate(size_t size, void **pointer) {

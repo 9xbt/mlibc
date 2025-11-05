@@ -426,6 +426,7 @@ if not no_headers
 		'options/internal/include/bits/ensure.h',
 		'options/internal/include/bits/machine.h',
 		'options/internal/include/bits/mbstate.h',
+		'options/internal/include/bits/locale.h',
 		'options/internal/include/bits/nl_item.h',
 		'options/internal/include/bits/null.h',
 		'options/internal/include/bits/off_t.h',
@@ -439,6 +440,7 @@ if not no_headers
 		'options/internal/include/bits/winsize.h',
 		'options/internal/include/bits/search.h',
 		'options/internal/include/bits/getopt.h',
+		'options/internal/include/bits/reclen_t.h',
 		subdir: 'bits'
 	)
 endif

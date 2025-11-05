@@ -1,5 +1,5 @@
-#ifndef _INTERNAL_THREADS_H
-#define _INTERNAL_THREADS_H
+#ifndef _MLIBC_INTERNAL_THREADS_H
+#define _MLIBC_INTERNAL_THREADS_H
 
 #include <abi-bits/clockid_t.h>
 #include <bits/size_t.h>
@@ -28,6 +28,8 @@
 #define __MLIBC_THREAD_PRIO_NONE 0
 #define __MLIBC_THREAD_PRIO_INHERIT 1
 #define __MLIBC_THREAD_PRIO_PROTECT 2
+
+#define __MLIBC_THREAD_MUTEX_INITIALIZER {0, 0, 0, 0}
 
 struct sched_param {
 	int sched_priority;
@@ -76,4 +78,4 @@ struct __mlibc_condattr {
 	clockid_t __mlibc_clock;
 };
 
-#endif /* _INTERNAL_THREADS_H */
+#endif /* _MLIBC_INTERNAL_THREADS_H */

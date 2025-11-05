@@ -317,15 +317,6 @@ int sys_stat(fsfd_target fsfdt, int fd, const char *path, int flags, struct stat
 		return e;
 	}
 
-#if defined(__i386__)
-	statbuf->st_atim.tv_sec = statbuf->__st_atim32.tv_sec;
-	statbuf->st_atim.tv_nsec = statbuf->__st_atim32.tv_nsec;
-	statbuf->st_mtim.tv_sec = statbuf->__st_mtim32.tv_sec;
-	statbuf->st_mtim.tv_nsec = statbuf->__st_mtim32.tv_nsec;
-	statbuf->st_ctim.tv_sec = statbuf->__st_ctim32.tv_sec;
-	statbuf->st_ctim.tv_nsec = statbuf->__st_ctim32.tv_nsec;
-#endif
-
 	return 0;
 }
 
@@ -905,7 +896,7 @@ void timer_handle(int, siginfo_t *, void *) {
 void *timer_setup(void *arg) {
 	auto ctx = reinterpret_cast<PosixTimerContext *>(arg);
 
-	sigset_t set;
+	sigset_t set{};
 	sigaddset(&set, SIGTIMER);
 
 	// wait for parent setup to be complete
@@ -920,7 +911,7 @@ void *timer_setup(void *arg) {
 	// notify the parent that the context can be dropped
 	__atomic_store_n(&ctx->workerSem, 1, __ATOMIC_RELEASE);
 
-	siginfo_t si;
+	siginfo_t si{};
 	int signo;
 
 	while(true) {
@@ -1077,6 +1068,20 @@ int sys_read_entries(int handle, void *buffer, size_t max_size, size_t *bytes_re
 	if(int e = sc_error(ret); e)
 		return e;
 	*bytes_read = sc_int_result<int>(ret);
+	return 0;
+}
+
+int sys_capget(cap_user_header_t hdrp, cap_user_data_t datap) {
+	auto ret = do_syscall(SYS_capget, hdrp, datap);
+	if (int e = sc_error(ret); e)
+		return e;
+	return 0;
+}
+
+int sys_capset(cap_user_header_t hdrp, const cap_user_data_t datap) {
+	auto ret = do_syscall(SYS_capset, hdrp, datap);
+	if (int e = sc_error(ret); e)
+		return e;
 	return 0;
 }
 
@@ -1679,8 +1684,12 @@ static void statfs_to_statvfs(struct statfs *from, struct statvfs *to) {
 		.f_ffree = from->f_ffree,
 		.f_favail = from->f_ffree,
 		.f_fsid = (unsigned long) from->f_fsid.__val[0],
+#if __INTPTR_WIDTH__ == 32
+		.__f_unused = 0,
+#endif
 		.f_flag = from->f_flags,
 		.f_namemax = from->f_namelen,
+		.f_spare = { 0 },
 	};
 }
 

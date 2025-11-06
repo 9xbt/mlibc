@@ -59,3 +59,6 @@
 #define SYS_accept      45
 #define SYS_recvfrom    46
 #define SYS_sendto      47
+
+#define SYS_fchdir      48
+#define SYS_renameat    49

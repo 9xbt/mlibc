@@ -275,7 +275,7 @@ namespace [[gnu::visibility("hidden")]] mlibc {
     int sys_read_entries(int handle, void *buffer, size_t max_size, size_t *bytes_read) {
         auto ret = __syscall3(SYS_readdir, handle, (long)buffer, max_size);
         if (ret < 0)
-            return ret;
+            return -ret;
         *bytes_read = ret;
         return 0;
     }
@@ -502,6 +502,34 @@ namespace [[gnu::visibility("hidden")]] mlibc {
 
     int sys_access(const char *path, int mode) {
         return sys_faccessat(AT_FDCWD, path, mode, 0);
+    }
+
+    int sys_fchdir(int fd) {
+        return -__syscall1(SYS_fchdir, fd);
+    }
+
+    int sys_timer_create(clockid_t clk, struct sigevent *__restrict evp, timer_t *__restrict res) {
+        return 0;
+    }
+
+    int sys_setitimer(int which, const struct itimerval *new_value, struct itimerval *old_value) {
+        return 0;
+    }
+
+    int sys_sigpending(sigset_t *set) {
+        return 0;
+    }
+
+    int sys_fsync(int fd) {
+        return 0;
+    }
+
+    int sys_renameat(int olddirfd, const char *old_path, int newdirfd, const char *new_path) {
+        return -__syscall4(SYS_renameat, olddirfd, (long)old_path, newdirfd, (long)new_path);
+    }
+
+    int sys_rename(const char *path, const char *new_path) {
+        return sys_renameat(AT_FDCWD, path, AT_FDCWD, new_path);
     }
 
 } //namespace mlibc

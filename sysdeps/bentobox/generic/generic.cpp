@@ -516,6 +516,10 @@ namespace [[gnu::visibility("hidden")]] mlibc {
         return 0;
     }
 
+    int sys_timer_settime(timer_t t, int flags, const struct itimerspec *__restrict val, struct itimerspec *__restrict old) {
+        return 0;
+    }
+
     int sys_sigpending(sigset_t *set) {
         return 0;
     }

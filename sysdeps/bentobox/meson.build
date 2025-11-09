@@ -72,9 +72,15 @@ if not no_headers
 		'include/abi-bits/fd_set.h',
 		'include/abi-bits/sem.h',
 		'include/abi-bits/route.h',
+		'include/syscall.h',
 		subdir: 'abi-bits',
 		follow_symlinks: true
 	)
+	install_headers(
+		'include/x86_64/syscall.h',
+		subdir: 'x86_64',
+		follow_symlinks: true
+    )
 endif
 
 if not headers_only

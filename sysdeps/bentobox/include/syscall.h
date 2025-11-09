@@ -62,3 +62,5 @@
 
 #define SYS_fchdir      48
 #define SYS_renameat    49
+#define SYS_reboot      50
+#define SYS_shutdown    51

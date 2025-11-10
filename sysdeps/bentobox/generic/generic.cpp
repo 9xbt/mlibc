@@ -1,3 +1,4 @@
+#include "mlibc/posix-sysdeps.hpp"
 #include <stddef.h>
 #include <string.h>
 #include <errno.h>
@@ -534,6 +535,26 @@ namespace [[gnu::visibility("hidden")]] mlibc {
 
     int sys_rename(const char *path, const char *new_path) {
         return sys_renameat(AT_FDCWD, path, AT_FDCWD, new_path);
+    }
+
+    int sys_readlinkat(int dirfd, const char *path, void *buffer, size_t max_size, ssize_t *length) {
+        auto ret = __syscall4(SYS_readlinkat, dirfd, (long)path, (long)buffer, max_size);
+        if (ret < 0)
+            return -ret;
+        *length = ret;
+        return 0;
+    }
+
+    int sys_readlink(const char *path, void *buffer, size_t max_size, ssize_t *length) {
+        return sys_readlinkat(AT_FDCWD, path, buffer, max_size, length);
+    }
+
+    int sys_symlinkat(const char *target_path, int dirfd, const char *link_path) {
+        return -__syscall3(SYS_symlinkat, (long)target_path, dirfd, (long)link_path);
+    }
+
+    int sys_symlink(const char *target_path, const char *link_path) {
+        return sys_symlinkat(target_path, AT_FDCWD, link_path);
     }
 
 } //namespace mlibc

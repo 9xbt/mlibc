@@ -81,6 +81,11 @@ if not no_headers
 		subdir: 'x86_64',
 		follow_symlinks: true
     )
+	install_headers(
+		'include/aarch64/syscall.h',
+		subdir: 'aarch64',
+		follow_symlinks: true
+    )
 endif
 
 if not headers_only

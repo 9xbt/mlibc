@@ -49,7 +49,7 @@ namespace mlibc {
     }
 
     int Sysdeps<FutexWake>::operator()(int *pointer, bool all) {
-        return -__syscall2(SYS_futex_wake, (long)pointer, all ? INT_MAX : 1, 0);
+        return -__syscall2(SYS_futex_wake, (long)pointer, all ? INT_MAX : 1);
     }
 
     int Sysdeps<VmMap>::operator()(void *hint, size_t size, int prot, int flags,

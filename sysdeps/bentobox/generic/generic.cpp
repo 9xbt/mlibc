@@ -278,6 +278,10 @@ namespace mlibc {
         return -__syscall3(SYS_exec, (long)path, (long)argv, (long)envp);
     }
 
+    int Sysdeps<Uname>::operator()(struct utsname *buf) {
+		return -__syscall1(SYS_uname, (long)buf);
+	}
+
     int Sysdeps<Waitpid>::operator()(pid_t pid, int *status, int flags, struct rusage *ru, pid_t *ret_pid) {
         auto ret = __syscall3(SYS_waitpid, pid, (long)status, flags);
         if (ret < 0)

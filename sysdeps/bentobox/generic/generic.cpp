@@ -143,6 +143,32 @@ namespace mlibc {
         return -__syscall1(SYS_sleep, (long)&ts);
     }
 
+    uid_t Sysdeps<GetUid>::operator()() {
+        return 0;
+    }
+
+    uid_t Sysdeps<GetEuid>::operator()() {
+        return 0;
+    }
+
+    gid_t Sysdeps<GetGid>::operator()() {
+        return 0;
+    }
+
+    gid_t Sysdeps<GetEgid>::operator()() {
+        return 0;
+    }
+
+    int Sysdeps<SetUid>::operator()(uid_t uid) {
+        (void)uid;
+        return 0;
+    }
+
+    int Sysdeps<SetGid>::operator()(gid_t gid) {
+        (void)gid;
+        return 0;
+    }
+
     int Sysdeps<Isatty>::operator()(int fd) {
         char _[8];
         auto ret = __syscall3(SYS_ioctl, fd, TIOCGWINSZ, (long)_);

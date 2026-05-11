@@ -1,4 +1,4 @@
-project('freestnd-c-hdrs')
+project('freestnd-cxx-hdrs')
 
 cpu = host_machine.cpu_family()
 if cpu == 'x86'
@@ -7,4 +7,4 @@ endif
 
 incl = include_directories(cpu / 'include')
 
-freestnd_c_hdrs_dep = declare_dependency(include_directories: incl)
+freestnd_cxx_hdrs_dep = declare_dependency(include_directories: incl)

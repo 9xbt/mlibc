@@ -112,7 +112,9 @@ struct BentoboxSysdepTags :
 	TimerCreate,
 	SetItimer,
 	TimerSettime,
-	GetEntropy
+	GetEntropy,
+	Truncate,
+	Ftruncate
 {};
 
 template<typename Tag>

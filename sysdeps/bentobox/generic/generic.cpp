@@ -636,6 +636,14 @@ namespace mlibc {
         return 0;
     }
 
+    int Sysdeps<Truncate>::operator()(const char *path, off_t length) {
+        return -__syscall2(SYS_truncate, (long)path, length);
+    }
+
+    int Sysdeps<Ftruncate>::operator()(int fd, off_t length) {
+        return -__syscall2(SYS_ftruncate, fd, length);
+    }
+
     #ifndef MLIBC_BUILDING_RTLD
 
     int Sysdeps<Ptsname>::operator()(int fd, char *buffer, size_t length) {

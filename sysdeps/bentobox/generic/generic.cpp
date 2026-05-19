@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <stddef.h>
 #include <string.h>
 #include <stdio.h>
@@ -640,7 +641,7 @@ namespace mlibc {
         return -__syscall2(SYS_truncate, (long)path, length);
     }
 
-    int Sysdeps<Ftruncate>::operator()(int fd, off_t length) {
+    int Sysdeps<Ftruncate>::operator()(int fd, size_t length) {
         return -__syscall2(SYS_ftruncate, fd, length);
     }
 

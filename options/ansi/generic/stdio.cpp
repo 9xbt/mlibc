@@ -1224,8 +1224,11 @@ int do_scanf(H &handler, const Char *fmt, __builtin_va_list args) {
 					if (tolower(c) == 'x') {
 						handler.consume();
 						c = handler.look_ahead();
+					} else {
+						++count;
 					}
 				}
+
 				while (true) {
 					if (c >= '0' && c <= '9') {
 						handler.consume();

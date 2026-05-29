@@ -394,6 +394,8 @@ int main() {
 	assert(int_value == 0x1234);
 	assert(sscanf(" -0x1234", "%x", &int_value) == 1);
 	assert(int_value == -0x1234);
+	assert(sscanf("0", "%x", &int_value) == 1);
+	assert(int_value == 0);
 
 	assert(sscanf("abc", "abc%n", &int_value) == 0);
 	assert(int_value == 3);

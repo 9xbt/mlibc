@@ -114,7 +114,10 @@ struct BentoboxSysdepTags :
 	TimerSettime,
 	GetEntropy,
 	Truncate,
-	Ftruncate
+	Ftruncate,
+	Sockname,
+	Peername,
+	ThreadSetname
 {};
 
 template<typename Tag>

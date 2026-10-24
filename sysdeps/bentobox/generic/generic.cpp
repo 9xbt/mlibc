@@ -645,6 +645,26 @@ namespace mlibc {
         return -__syscall2(SYS_ftruncate, fd, length);
     }
 
+    int Sysdeps<Sockname>::operator()(int fd, struct sockaddr *addr_ptr, socklen_t max_addr_length,
+		socklen_t *actual_length) {
+        if (max_addr_length >= sizeof(sa_family_t))
+            addr_ptr->sa_family = AF_UNIX;
+        *actual_length = sizeof(sa_family_t);
+        return 0;
+    }
+
+    int Sysdeps<Peername>::operator()(int fd, struct sockaddr *addr_ptr, socklen_t max_addr_length,
+        socklen_t *actual_length) {
+        if (max_addr_length >= sizeof(sa_family_t))
+            addr_ptr->sa_family = AF_UNIX;
+        *actual_length = sizeof(sa_family_t);
+        return 0;
+    }
+
+    int Sysdeps<ThreadSetname>::operator()(void *tcb, const char *name) {
+        return 0;
+    }
+
     #ifndef MLIBC_BUILDING_RTLD
 
     int Sysdeps<Ptsname>::operator()(int fd, char *buffer, size_t length) {

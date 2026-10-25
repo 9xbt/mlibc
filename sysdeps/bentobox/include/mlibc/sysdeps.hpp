@@ -117,7 +117,10 @@ struct BentoboxSysdepTags :
 	Ftruncate,
 	Sockname,
 	Peername,
-	ThreadSetname
+	ThreadSetname,
+	Brk,
+	Madvise,
+	GetRusage
 {};
 
 template<typename Tag>

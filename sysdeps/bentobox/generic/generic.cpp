@@ -665,6 +665,18 @@ namespace mlibc {
         return 0;
     }
 
+    int Sysdeps<Brk>::operator()(void **out) {
+        return -1;
+    }
+
+    int Sysdeps<Madvise>::operator()(void *addr, size_t length, int advice) {
+        return 0;
+    }
+
+    int Sysdeps<GetRusage>::operator()(int scope, struct rusage *usage) {
+        return 0;
+    }
+
     #ifndef MLIBC_BUILDING_RTLD
 
     int Sysdeps<Ptsname>::operator()(int fd, char *buffer, size_t length) {

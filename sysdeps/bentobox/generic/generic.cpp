@@ -696,7 +696,7 @@ namespace mlibc {
     }
 
     int Sysdeps<CopyFileRange>::operator()(int fd_in, off_t *off_in, int fd_out, off_t *off_out, size_t count, unsigned int flags, ssize_t *bytes_copied) {
-        return -1;
+        return ENOSYS;
     }
 
     int Sysdeps<GetAffinity>::operator()(pid_t pid, size_t cpusetsize, cpu_set_t *mask) {

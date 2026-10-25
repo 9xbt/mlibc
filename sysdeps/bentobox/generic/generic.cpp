@@ -392,17 +392,17 @@ namespace mlibc {
                 *ret = 2048;
                 break;
             case _SC_PHYS_PAGES:
-                if (int e = __syscall1(SYS_sysinfo, (long)info); e)
+                if (int e = __syscall1(SYS_sysinfo, (long)&info); e)
                     return e;
                 *ret = info.totalram;
                 break;
-            case _SV_AVPHYS_PAGES:
-                if (int e = __syscall1(SYS_sysinfo, (long)info); e)
+            case _SC_AVPHYS_PAGES:
+                if (int e = __syscall1(SYS_sysinfo, (long)&info); e)
                     return e;
                 *ret = info.freeram;
                 break;
             case _SC_NPROCESSORS_ONLN:
-                if (int e = __syscall1(SYS_sysinfo, (long)info); e)
+                if (int e = __syscall1(SYS_sysinfo, (long)&info); e)
                     return e;
                 *ret = info.nprocs_onln;
                 break;

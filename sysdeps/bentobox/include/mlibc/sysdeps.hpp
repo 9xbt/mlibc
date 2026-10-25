@@ -120,7 +120,9 @@ struct BentoboxSysdepTags :
 	ThreadSetname,
 	Brk,
 	Madvise,
-	GetRusage
+	GetRusage,
+	CopyFileRange,
+	GetAffinity
 {};
 
 template<typename Tag>

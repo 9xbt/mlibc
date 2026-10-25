@@ -9,6 +9,7 @@
 
 #include <asm/ioctls.h>
 #include <abi-bits/seek-whence.h>
+#include <abi-bits/bb_sysinfo.h>
 #include <abi-bits/vm-flags.h>
 #include <abi-bits/signal.h>
 #include <abi-bits/ioctls.h>
@@ -21,6 +22,7 @@
 #include <mlibc/debug.hpp>
 
 #include <syscall.h>
+#include <unistd.h>
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
@@ -374,6 +376,7 @@ namespace mlibc {
 
     int Sysdeps<Sysconf>::operator()(int num, long *ret) {
         struct rlimit ru;
+        struct bb_sysinfo info;
         switch(num) {
             case _SC_OPEN_MAX:
                 if (int e = sysdep<GetRlimit>(RLIMIT_NOFILE, &ru); e)
@@ -387,6 +390,21 @@ namespace mlibc {
                 break;
             case _SC_LINE_MAX:
                 *ret = 2048;
+                break;
+            case _SC_PHYS_PAGES:
+                if (int e = __syscall1(SYS_sysinfo, (long)info); e)
+                    return e;
+                *ret = info.totalram;
+                break;
+            case _SV_AVPHYS_PAGES:
+                if (int e = __syscall1(SYS_sysinfo, (long)info); e)
+                    return e;
+                *ret = info.freeram;
+                break;
+            case _SC_NPROCESSORS_ONLN:
+                if (int e = __syscall1(SYS_sysinfo, (long)info); e)
+                    return e;
+                *ret = info.nprocs_onln;
                 break;
             default:
                 return EINVAL;
@@ -674,6 +692,14 @@ namespace mlibc {
     }
 
     int Sysdeps<GetRusage>::operator()(int scope, struct rusage *usage) {
+        return 0;
+    }
+
+    int Sysdeps<CopyFileRange>::operator()(int fd_in, off_t *off_in, int fd_out, off_t *off_out, size_t count, unsigned int flags, ssize_t *bytes_copied) {
+        return -1;
+    }
+
+    int Sysdeps<GetAffinity>::operator()(pid_t pid, size_t cpusetsize, cpu_set_t *mask) {
         return 0;
     }
 
